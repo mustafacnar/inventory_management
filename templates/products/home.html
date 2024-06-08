@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>DOPIGO E-TRADE APPLICATION</h1>
+    <div class="button-container">
+        <a href="{% url 'add_product' %}" class="button">Add Product</a>
+        <a href="{% url 'product_list' %}" class="button">Product List</a>
+        <a href="{% url 'create_bundle' %}" class="button">Create Bundle</a>
+        <a href="{% url 'bundle_list' %}" class="button">Bundle List</a>
+        <a href="{% url 'create_sales_channel' %}" class="button">Add Sales Channel</a>
+        <a href="{% url 'sales_channel_list' %}" class="button">Sales Channel List</a>
+    </div>
+
+{% endblock content %}

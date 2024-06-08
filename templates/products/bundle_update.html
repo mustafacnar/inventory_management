@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+ <h1>Update Bundle Stock</h1>
+        {% if form.errors %}
+            <div class="error">
+                <ul>
+                    {% for field, errors in form.errors.items %}
+                        {% for error in errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+        <form method="post">
+            {% csrf_token %}
+            <label for="id_stock">New Stock:</label>
+            {{ form.stock }}
+            <button type="submit">Update Stock</button>
+        </form>
+{% endblock content %}

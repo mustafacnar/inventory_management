@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Bundle List</h1>
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Stock</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for bundle in bundles %}
+            <tr>
+                <td>{{ bundle.name }}</td>
+                <td>{{ bundle.stock }}</td>
+                <td style="display: flex; align-items: center;">
+                    <a style="background-color: aqua;" href="{% url 'bundle_detail' bundle.pk %}">Details</a>
+                    <a href="{% url 'bundle_update' bundle.pk %}">Update</a> 
+                    <a style="background-color: red ;" href="{% url 'delete_bundle' bundle.pk %}">Delete</a> 
+                </td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="3">No bundles available</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock content %}

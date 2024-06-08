@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Bundle Detail</h1>
+<p><strong>Bundle ID:</strong> {{ bundle.pk }}</p>
+<p><strong>Stock:</strong> {{ bundle.stock }}</p>
+<p><strong>Products:</strong></p>
+<ul>
+    {% for product in bundle.products.all %}
+        <li>{{ product.product_name }} - {{ product.product_quantity }}</li>
+    {% endfor %}
+</ul>
+<div class="button-container">
+    <a href="{% url 'bundle_list' %}" class="button">Back to Bundle List</a>
+</div>
+{% endblock content %}

@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Are you sure you want to delete {{ bundle.name }}?</h1>
+        <form method="post">
+            {% csrf_token %}
+            <div class="button-container">
+                <button type="submit">Confirm Delete</button>
+                <a href="{% url 'bundle_list' %}" class="button cancel-button">Cancel</a>
+            </div>
+        </form>
+{% endblock content %}

@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>{{ sales_channel.sales_channel_name }} Details</h1>
+        <h2>Products</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Product Name</th>
+                    <th>Product Quantity</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                <tr>
+                    <td>{{ product.product_name }}</td>
+                    <td>{{ product.product_quantity }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <h2>Bundles</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Bundle Name</th>
+                    <th>Stock</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for bundle in bundles %}
+                <tr>
+                    <td>{{ bundle.name }}</td>
+                    <td>{{ bundle.stock }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+{% endblock content %}

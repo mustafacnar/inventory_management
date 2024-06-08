@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Product List</h1>
+    <table>
+        <thead>
+        <tr>
+            <th>Product Name</th>
+            <th>Product Quantity</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for item in products %}
+            <tr>
+                <td>{{ item.product_name }}</td>
+                <td>{{ item.product_quantity }}</td>
+                <td>
+                    <a href="{% url 'delete_product' item.id %}" style="background-color: red; color: white;">Delete</a>
+                    <a href="{% url 'update_product' item.id %}" style="background-color: green; color: white;">Update</a></td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock content %}

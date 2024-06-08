@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Sales Channel List</h1>
+    <table>
+        <thead>
+        <tr>
+            <th>Sales Channel Name</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for sales_channel in sales_channels %}
+            <tr>
+                <td>{{ sales_channel.sales_channel_name }}</td>
+                <td><a href="{% url 'sales_channel_details' sales_channel.id %}" class="button">View Details</a></td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="2">No sales channels available</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <div style="text-align: center; margin-top: 20px;">
+        <a href="{% url 'create_sales_channel' %}" class="button">Add New Sales Channel</a>
+    </div>
+{% endblock content %}

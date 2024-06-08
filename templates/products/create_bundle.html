@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Create Bundle</h1>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            {% if error_message %}
+                <p class="error-message">{{ error_message }}</p>
+            {% endif %}
+            <div class="button-container">
+                <button type="submit">Create Bundle</button>
+                <a href="{% url 'bundle_list' %}" class="button">Go to Bundle List</a>
+            </div>
+        </form>
+{% endblock content %}
