@@ -1,8 +1,6 @@
-from django.dispatch import receiver
 from django.shortcuts import render, redirect, get_object_or_404
 from .forms import ProductForm, BundleForm, SalesChannelForm, BundleUpdateForm
 from .models import Product, Bundle, SalesChannel
-from django.db.models.signals import post_save, pre_delete
 
 
 def add_product(request):
@@ -97,18 +95,6 @@ def bundle_update(request, bundle_id):
 def bundle_detail(request, pk):
     bundle = get_object_or_404(Bundle, pk=pk)
     return render(request, 'products/bundle_detail.html', {'bundle': bundle})
-
-
-@receiver(post_save, sender=Product)
-def update_bundles_stock(sender, instance, **kwargs):
-    for bundle in instance.bundle_set.all():
-        bundle.stock = min([product.product_quantity for product in bundle.products.all()])
-        bundle.save()
-
-
-@receiver(pre_delete, sender=Product)
-def delete_related_bundles(sender, instance, **kwargs):
-    instance.bundle_set.all().delete()
 
 
 def create_sales_channel(request):
