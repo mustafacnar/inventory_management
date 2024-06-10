@@ -14,6 +14,10 @@ Projeyi çalıştırmak için;
 This application, designed specifically for a single user, enables an e-commerce seller to manage tasks such as product registration and stock tracking across various sales channels.
 	
 ## Running project
+Clone project to your computer
+
+	https://github.com/mustafacnar/inventory_management.git
+ 
 Install require packages
 
 	pip install -r requirements.txt
