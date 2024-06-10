@@ -1,6 +1,7 @@
 from django.urls import path
 from .views import add_product, product_list, update_product, delete_product, create_bundle, bundle_list, bundle_detail, \
-    create_sales_channel, sales_channel_list, home, sales_channel_details, bundle_update, delete_bundle
+    create_sales_channel, sales_channel_list, home, sales_channel_details, bundle_update, delete_bundle, \
+    delete_sales_channel
 
 urlpatterns = [
     path('create_product/', add_product, name='add_product'),
@@ -15,5 +16,6 @@ urlpatterns = [
     path('sales_channel/<int:pk>/', sales_channel_details, name='sales_channel_details'),
     path('bundle_update/<int:bundle_id>/', bundle_update, name='bundle_update'),
     path('delete_bundle/<int:pk>/', delete_bundle, name='delete_bundle'),
+    path('delete_sales_channel/<int:pk>/', delete_sales_channel, name='delete_sales_channel'),
     path('', home, name='home')
 ]
