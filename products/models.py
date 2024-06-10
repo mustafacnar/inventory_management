@@ -6,7 +6,7 @@ class Product(models.Model):
     product_quantity = models.PositiveIntegerField()
 
     def save(self, *args, **kwargs):
-        self.product_name = self.product_name.lower()
+        self.product_name = self.product_name.title()
         super().save(*args, **kwargs)
 
     def __str__(self):
@@ -28,4 +28,6 @@ class SalesChannel(models.Model):
     def __str__(self):
         return self.sales_channel_name
 
-
+    def save(self, *args, **kwargs):
+        self.sales_channel_name = self.sales_channel_name.title()
+        super().save(*args, **kwargs)
