@@ -131,3 +131,11 @@ def delete_bundle(request, pk):
         bundle.delete()
         return redirect('bundle_list')
     return render(request, 'products/delete_bundle.html', {'bundle': bundle})
+
+
+def delete_sales_channel(request, pk):
+    sales_channel = get_object_or_404(SalesChannel, pk=pk)
+    if request.method == 'POST':
+        sales_channel.delete()
+        return redirect('sales_channel_list')
+    return render(request, 'products/delete_sales_channel.html', {'sales_channel': sales_channel})
