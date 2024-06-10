@@ -8,7 +8,7 @@ class ProductForm(forms.ModelForm):
         fields = ['product_name', 'product_quantity']
 
     def clean_product_name(self):
-        product_name = self.cleaned_data.get('product_name').lower()
+        product_name = self.cleaned_data.get('product_name').title()
         if self.instance.pk is None:
             if Product.objects.filter(product_name=product_name).exists():
                 raise forms.ValidationError('This product already exists.')
@@ -24,10 +24,11 @@ class BundleForm(forms.Form):
     def clean(self):
         cleaned_data = super().clean()
         selected_products = cleaned_data.get('products')
-        bundle_name = ' & '.join([product.product_name for product in selected_products])
-        if Bundle.objects.filter(name__iexact=bundle_name).exists():
-            raise forms.ValidationError("A bundle with this name already exists.")
-        cleaned_data['name'] = bundle_name
+        if selected_products:
+            bundle_name = ' & '.join([product.product_name for product in selected_products])
+            if Bundle.objects.filter(name__iexact=bundle_name).exists():
+                raise forms.ValidationError("A bundle with this name already exists.")
+            cleaned_data['name'] = bundle_name
         return cleaned_data
 
 
@@ -50,7 +51,7 @@ class SalesChannelForm(forms.ModelForm):
 
     def clean(self):
         cleaned_data = super().clean()
-        sales_channel_name = cleaned_data.get('sales_channel_name')
+        sales_channel_name = cleaned_data.get('sales_channel_name').title()
         if sales_channel_name and SalesChannel.objects.filter(sales_channel_name__iexact=sales_channel_name).exists():
-            raise forms.ValidationError("A sales channel with this name already exists (case-insensitive).")
+            raise forms.ValidationError("A sales channel with this name already exists.")
         return cleaned_data
