@@ -48,17 +48,8 @@ def create_bundle(request):
     if request.method == 'POST':
         form = BundleForm(request.POST)
         if form.is_valid():
-            selected_products = form.cleaned_data['products']
-            if len(selected_products) < 2:
-                return render(request, 'products/create_bundle.html',
-                              {'form': form, 'error_message': 'Select at least 2 products'})
-            else:
-                bundle_name = ' & '.join([str(product) for product in selected_products])
-                bundle = Bundle.objects.create(name=bundle_name,
-                                               stock=min([product.product_quantity for product in selected_products]))
-                bundle.products.set(selected_products)
-                bundle.save()
-                return redirect('bundle_list')
+            form.save()
+            return redirect('bundle_list')
     else:
         form = BundleForm()
     return render(request, 'products/create_bundle.html', {'form': form})
@@ -74,18 +65,7 @@ def bundle_update(request, bundle_id):
     if request.method == 'POST':
         form = BundleUpdateForm(request.POST, instance=bundle)
         if form.is_valid():
-            new_stock = form.cleaned_data['stock']
-            bundle.stock = new_stock
-            bundle.save()
-            products = bundle.products.all()
-            stock_list = list()
-            for product in products:
-                stock_list.append(product.product_quantity)
-            difference = (min(stock_list) - new_stock)
-            for product in products:
-                product.product_quantity = product.product_quantity - difference
-                product.save()
-
+            form.save()
             return redirect('bundle_list')
     else:
         form = BundleUpdateForm(instance=bundle)
@@ -113,8 +93,16 @@ def sales_channel_list(request):
     return render(request, 'products/sales_channel_list.html', {'sales_channels': sales_channels})
 
 
+def delete_sales_channel(request, pk):
+    sales_channel = get_object_or_404(SalesChannel, pk=pk)
+    if request.method == 'POST':
+        sales_channel.delete()
+        return redirect('bundle_list')
+    return render(request, 'products/delete_sales_channel.html', {'sales_channel': sales_channel})
+
+
 def home(request):
-    return render(request, 'products/home.html', )
+    return render(request, 'products/home.html')
 
 
 def sales_channel_details(request, pk):
@@ -133,9 +121,45 @@ def delete_bundle(request, pk):
     return render(request, 'products/delete_bundle.html', {'bundle': bundle})
 
 
-def delete_sales_channel(request, pk):
-    sales_channel = get_object_or_404(SalesChannel, pk=pk)
+def sales_page(request):
+    products = Product.objects.all()
+    bundles = Bundle.objects.all()
+
     if request.method == 'POST':
-        sales_channel.delete()
-        return redirect('sales_channel_list')
-    return render(request, 'products/delete_sales_channel.html', {'sales_channel': sales_channel})
+        if 'sale_product_id' in request.POST:
+            product_id = request.POST['sale_product_id']
+            product = Product.objects.get(pk=product_id)
+
+            if product.product_quantity <= 0:
+                return redirect('sales_page')
+            else:
+                product.product_quantity -= 1
+                product.save()
+                product_name = product.product_name
+                relevant_bundles = Bundle.objects.filter(products__product_name__icontains=product_name)
+                for bundle in relevant_bundles:
+                    if product.product_quantity < bundle.stock:
+                        bundle.stock -= 1
+                        bundle.save()
+            return redirect('sales_page')
+        if 'sale_bundle_id' in request.POST:
+            bundle_id = request.POST['sale_bundle_id']
+            bundle = Bundle.objects.get(pk=bundle_id)
+            if bundle.stock <= 0:
+                return redirect('sales_page')
+            else:
+                bundle.stock -= 1
+                bundle.save()
+                for product in bundle.products.all():
+                    product.product_quantity -= 1
+                    product.save()
+                bundle_products = bundle.products.all()
+                relevant_bundles = Bundle.objects.filter(products__in=bundle_products).exclude(pk=bundle_id)
+                for other_bundle in relevant_bundles:
+                    other_bundle_products = other_bundle.products.all()
+                    min_product_quantity = min([product.product_quantity for product in other_bundle_products])
+                    if other_bundle.stock > min_product_quantity:
+                        other_bundle.stock -= 1
+                        other_bundle.save()
+            return redirect('sales_page')
+    return render(request, 'products/sales_page.html', {'products': products, 'bundles': bundles})
