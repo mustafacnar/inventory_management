@@ -4,6 +4,7 @@
 <h1>Bundle Detail</h1>
 <p><strong>Bundle ID:</strong> {{ bundle.pk }}</p>
 <p><strong>Stock:</strong> {{ bundle.stock }}</p>
+    <p><strong>Sales Channel:</strong> {{ bundle.sales_channel }}</p>
 <p><strong>Products:</strong></p>
 <ul>
     {% for product in bundle.products.all %}
