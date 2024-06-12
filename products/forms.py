@@ -1,4 +1,6 @@
 from django import forms
+from django.core.exceptions import ValidationError
+
 from .models import Product, Bundle, SalesChannel
 
 
@@ -18,18 +20,41 @@ class ProductForm(forms.ModelForm):
         return product_name
 
 
-class BundleForm(forms.Form):
+class BundleForm(forms.ModelForm):
     products = forms.ModelMultipleChoiceField(queryset=Product.objects.all(), widget=forms.CheckboxSelectMultiple)
+    sales_channel = forms.ModelChoiceField(queryset=SalesChannel.objects.all(), required=False)
+
+    class Meta:
+        model = Bundle
+        fields = ['products', 'stock', 'sales_channel']
 
     def clean(self):
         cleaned_data = super().clean()
         selected_products = cleaned_data.get('products')
-        if selected_products:
-            bundle_name = ' & '.join([product.product_name for product in selected_products])
-            if Bundle.objects.filter(name__iexact=bundle_name).exists():
-                raise forms.ValidationError("A bundle with this name already exists.")
-            cleaned_data['name'] = bundle_name
+        sales_channel = cleaned_data.get('sales_channel')
+        bundle_name = ' & '.join([product.product_name for product in selected_products])
+        if sales_channel:
+            if Bundle.objects.filter(name__iexact=bundle_name, sales_channel=sales_channel).exists():
+                raise ValidationError("A bundle with this name and sales channel already exists.")
+        else:
+            raise ValidationError("Please select a Sales Channel.")
+
+        cleaned_data['name'] = bundle_name
+        min_stock = min(product.product_quantity for product in selected_products)
+        max_stock = cleaned_data.get('stock')
+
+        if max_stock > min_stock:
+            raise ValidationError(f"Stock cannot be greater than the minimum product quantity ({min_stock}).")
+
         return cleaned_data
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        instance.name = self.cleaned_data['name']
+        if commit:
+            instance.save()
+            self.save_m2m()
+        return instance
 
 
 class BundleUpdateForm(forms.ModelForm):
@@ -39,8 +64,13 @@ class BundleUpdateForm(forms.ModelForm):
 
     def clean_stock(self):
         new_stock = self.cleaned_data['stock']
-        if new_stock >= self.instance.stock:
-            raise forms.ValidationError("New stock must be less than current stock!")
+        products = self.instance.products.all()
+        min_product_quantity = min(product.product_quantity for product in products)
+
+        if new_stock > min_product_quantity:
+            raise forms.ValidationError(
+                f"New stock must be less than or equal to the minimum product quantity ({min_product_quantity})!")
+
         return new_stock
 
 
