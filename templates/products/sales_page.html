@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Sales Page</h1>
+
+{% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+<h2>Products</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Product Name</th>
+            <th>Product Stock</th>
+            <th>Transaction</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for product in products %}
+        <tr>
+            <td>{{ product.product_name }}</td>
+            <td>{{ product.product_quantity }}</td>
+            <td>
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="sale_product_id" value="{{ product.pk }}">
+                    <button type="submit" {% if product.product_quantity <= 0 %}disabled{% endif %}>Sale</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<h2>Bundles</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Bundle Name</th>
+            <th>Stock</th>
+            <th>Sales Channel</th>
+            <th>Products</th>
+            <th>Transaction</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for bundle in bundles %}
+        <tr>
+            <td>{{ bundle.name }}</td>
+            <td>{{ bundle.stock }}</td>
+            <td>{{ bundle.sales_channel }}</td>
+            <td>
+                <ul>
+                    {% for product in bundle.products.all %}
+                    <li>{{ product.product_name }}</li>
+                    {% endfor %}
+                </ul>
+            </td>
+            <td class="action-buttons">
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="sale_bundle_name" value="{{ bundle.name }}">
+                    <input type="hidden" name="sale_bundle_id" value="{{ bundle.pk }}">
+                    <button type="submit" {% if bundle.stock <= 0 %}disabled{% endif %}>Sale</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock content %}
